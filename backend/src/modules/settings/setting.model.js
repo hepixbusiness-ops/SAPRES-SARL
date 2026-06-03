@@ -1,26 +1,36 @@
 const mongoose = require('mongoose');
 
-const settingSchema = new mongoose.Schema(
+const settingsSchema = new mongoose.Schema(
   {
-    key: {
-      type: String,
-      required: true,
-      unique: true
-    },
+    companyName: String,
 
-    value: mongoose.Schema.Types.Mixed,
+    email: String,
 
-    type: {
-      type: String,
-      enum: ['string', 'number', 'boolean', 'json'],
-      default: 'string'
-    },
+    phone: String,
 
-    description: String
+    whatsapp: String,
+
+    address: String,
+
+    facebook: String,
+
+    instagram: String,
+
+    linkedin: String,
+
+    youtube: String,
+
+    logo: String,
+
+    favicon: String,
+
+    seoDefaultTitle: String,
+
+    seoDefaultDescription: String
   },
   {
     timestamps: true
   }
 );
 
-module.exports = mongoose.model('Setting', settingSchema);
+module.exports = mongoose.model('Settings', settingsSchema);

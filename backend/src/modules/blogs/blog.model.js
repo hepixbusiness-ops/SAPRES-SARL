@@ -2,47 +2,36 @@ const mongoose = require('mongoose');
 
 const blogSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true
-    },
+    title: String,
 
     slug: {
       type: String,
-      required: true,
       unique: true
     },
 
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    },
-
-    content: {
-      type: String,
-      required: true
-    },
-
     excerpt: String,
+
+    content: String,
 
     featuredImage: String,
 
     tags: [String],
 
-    status: {
-      type: String,
-      enum: ['draft', 'published'],
-      default: 'draft'
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
     },
 
-    views: {
-      type: Number,
-      default: 0
+    published: {
+      type: Boolean,
+      default: false
     },
 
     seoTitle: String,
 
-    seoDescription: String
+    seoDescription: String,
+
+    publishedAt: Date
   },
   {
     timestamps: true

@@ -1,47 +1,80 @@
 const mongoose = require('mongoose');
 const generateOrderNumber = require('../../utils/generateOrderNumber');
 
+const orderItemSchema = new mongoose.Schema(
+  {
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product"
+    },
+
+    productName: String,
+
+    quantity: Number,
+
+    unitPrice: Number,
+
+    totalPrice: Number
+  },
+  {
+    _id: false
+  }
+);
+
 const orderSchema = new mongoose.Schema(
   {
     orderNumber: {
       type: String,
-      unique: true,
-      default: () => generateOrderNumber('ORD')
+      unique: true
     },
 
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    },
-
-    items: [
-      {
-        product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Product'
-        },
-        quantity: Number,
-        price: Number
-      }
-    ],
-
-    totalAmount: {
-      type: Number,
+    customerName: {
+      type: String,
       required: true
     },
 
-    status: {
+    customerPhone: {
       type: String,
-      enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
-      default: 'pending'
+      required: true
     },
 
-    shippingAddress: String,
+    customerEmail: String,
+
+    deliveryAddress: String,
+
+    items: [orderItemSchema],
+
+    subtotal: Number,
+
+    deliveryFee: Number,
+
+    total: Number,
+
+    paymentMethod: {
+      type: String,
+      enum: ["mtn", "orange"]
+    },
 
     paymentStatus: {
       type: String,
-      enum: ['unpaid', 'paid', 'refunded'],
-      default: 'unpaid'
+      enum: [
+        "pending",
+        "paid",
+        "failed",
+        "refunded"
+      ],
+      default: "pending"
+    },
+
+    orderStatus: {
+      type: String,
+      enum: [
+        "pending",
+        "processing",
+        "delivered",
+        "cancelled"
+      ],
+      default: "pending"
     }
   },
   {

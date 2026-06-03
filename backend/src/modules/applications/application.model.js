@@ -4,36 +4,43 @@ const applicationSchema = new mongoose.Schema(
   {
     job: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Job',
+      ref: "Job",
       required: true
     },
 
-    firstName: {
-      type: String,
-      required: true
-    },
+    firstName: String,
 
-    lastName: {
-      type: String,
-      required: true
-    },
+    lastName: String,
 
-    email: {
-      type: String,
-      required: true
-    },
+    email: String,
 
     phone: String,
 
-    resume: String,
+    address: String,
+
+    cv: String,
+
+    diploma: String,
+
+    idCard: String,
+
+    passportPhoto: String,
 
     coverLetter: String,
 
     status: {
       type: String,
-      enum: ['submitted', 'reviewing', 'shortlisted', 'rejected', 'hired'],
-      default: 'submitted'
-    }
+      enum: [
+        "pending",
+        "reviewing",
+        "interview",
+        "accepted",
+        "rejected"
+      ],
+      default: "pending"
+    },
+
+    notes: String
   },
   {
     timestamps: true

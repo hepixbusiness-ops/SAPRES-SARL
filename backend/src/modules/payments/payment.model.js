@@ -4,30 +4,33 @@ const paymentSchema = new mongoose.Schema(
   {
     order: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Order',
+      ref: "Order",
       required: true
     },
 
-    amount: {
-      type: Number,
-      required: true
-    },
-
-    paymentMethod: {
+    provider: {
       type: String,
-      enum: ['card', 'bank_transfer', 'wallet'],
-      required: true
+      enum: ["mtn", "orange"]
     },
 
-    transactionId: String,
+    amount: Number,
+
+    transactionReference: String,
+
+    providerReference: String,
 
     status: {
       type: String,
-      enum: ['pending', 'completed', 'failed'],
-      default: 'pending'
+      enum: [
+        "pending",
+        "successful",
+        "failed",
+        "refunded"
+      ],
+      default: "pending"
     },
 
-    metadata: mongoose.Schema.Types.Mixed
+    rawResponse: mongoose.Schema.Types.Mixed
   },
   {
     timestamps: true
