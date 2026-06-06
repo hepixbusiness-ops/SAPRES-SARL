@@ -4,178 +4,157 @@ import Link from 'next/link'
 import { productsApi } from '@/lib/api'
 import { formatPrice } from '@/lib/cart'
 import type { Product } from '@/types'
-import RevealWrapper from '@/components/ui/RevealWrapper'
 
-const FALLBACK_EMOJIS = ['☀️', '🔋', '⚡', '💡', '🌿', '🏭']
-const THUMB_COLORS = [
-  'linear-gradient(135deg,#0a1a10,#1a3020)',
-  'linear-gradient(135deg,#12102a,#201a40)',
-  'linear-gradient(135deg,#0e200e,#1a3a1a)',
-  'linear-gradient(135deg,#151515,#2a2a2a)',
-  'linear-gradient(135deg,#1a1505,#2a2205)',
+// Photos Unsplash produits solaires
+const PROD_PHOTOS = [
+  'https://images.unsplash.com/photo-1594835896731-af0df4b57c97?auto=format&fit=crop&w=500&q=80',
+  'https://images.unsplash.com/photo-1548611635-96b55b93d204?auto=format&fit=crop&w=500&q=80',
+  'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1558449028-b53a39d100fc?auto=format&fit=crop&w=500&q=80',
+  'https://images.unsplash.com/photo-1521618755572-156ae0cdd74d?auto=format&fit=crop&w=500&q=80',
+]
+
+const MOCK_PRODUCTS: Product[] = [
+  { _id:'1', name:'Pompes Solaires', slug:'pompes-solaires', category:{ _id:'c1', name:'Pompage Solaire', slug:'pompage-solaire' }, price:95000, status:'published', isFeatured:true, inStock:true, tags:['pompage','forage'], images:[], description:'Alimentation autonome pour forages et puits profonds, adaptées au climat tropical.', features:['Débit jusqu\'à 10m³/h','Protection IP68','Garantie 3 ans'], specifications:{}, warranty:'3 ans', createdAt:'', updatedAt:'' },
+  { _id:'2', name:'Kits Solaires Complets', slug:'kits-solaires', category:{ _id:'c2', name:'Installation Résidentielle', slug:'installation-residentielle' }, price:110000, status:'published', isFeatured:true, inStock:true, tags:['kit','résidentiel'], images:[], description:'Panneau + batterie + régulateur inclus. Prêt à installer.', features:['Panneau 450Wc','Batterie LiFePO4','Régulateur MPPT'], specifications:{}, warranty:'25 ans', createdAt:'', updatedAt:'' },
+  { _id:'3', name:'Panneaux Solaires Monocristallins', slug:'panneaux-monocristallins', category:{ _id:'c3', name:'Panneaux Solaires', slug:'panneaux-solaires' }, price:110000, status:'published', isFeatured:true, inStock:true, tags:['panneaux','Blue Carbon'], images:[], description:'Haut rendement, certifiés pour conditions tropicales.', features:['450Wc','Rendement 22%','Garantie 25 ans'], specifications:{}, warranty:'25 ans', createdAt:'', updatedAt:'' },
+  { _id:'4', name:'Batteries Solaires', slug:'batteries-solaires', category:{ _id:'c4', name:'Stockage', slug:'stockage' }, price:85000, status:'published', isFeatured:false, inStock:true, tags:['batterie','lithium'], images:[], description:'Gel & Lithium 12V-48V. Longue durée sans entretien.', features:['LiFePO4','Cycles >3000','BMS intégré'], specifications:{}, warranty:'5 ans', createdAt:'', updatedAt:'' },
+  { _id:'5', name:'Éclairage Solaire', slug:'eclairage-solaire', category:{ _id:'c5', name:'Lampadaires', slug:'lampadaires' }, price:45000, status:'published', isFeatured:false, inStock:true, tags:['lampadaire','LED'], images:[], description:'Lampadaires autonomes. Détecteur de mouvement.', features:['LED 60W','Panneau intégré','Capteur crépusculaire'], specifications:{}, warranty:'3 ans', createdAt:'', updatedAt:'' },
 ]
 
 export default function FeaturedProducts() {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
+  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS)
 
   useEffect(() => {
-    productsApi.getAll({ featured: true, limit: 5 })
-      .then((res) => setProducts(res.data.data || []))
-      .catch(console.error)
-      .finally(() => setLoading(false))
+    productsApi.getAll({ isFeatured: true, status: 'published', limit: 6 })
+      .then((res) => { if (res.data.data?.length >= 3) setProducts(res.data.data) })
+      .catch(() => {})
   }, [])
 
-  return (
-    <section className="sec">
-      <RevealWrapper>
-        <span className="slabel">Nos Produits Phares</span>
-      </RevealWrapper>
-      <RevealWrapper delay={1}>
-        <h2 className="stitle">
-          Gamme <span className="ac">Blue Carbon</span>
-        </h2>
-      </RevealWrapper>
-      <RevealWrapper delay={2}>
-        <p className="sdesc">
-          Panneaux solaires, batteries lithium, onduleurs hybrides. Tous les produits Blue Carbon
-          distribués par SAPRES SARL au Cameroun.
-        </p>
-      </RevealWrapper>
+  const featured  = products[2] || products[0]
+  const sideLeft  = products[0] || products[0]
+  const sideRight = products[1] || products[1]
+  const smalls    = products.slice(3, 6)
 
-      {loading ? (
-        <ProductsSkeleton />
-      ) : products.length > 0 ? (
-        <div className="rsp-grid-5" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16, marginTop: 8 }}>
-          {products.map((p, i) => (
-            <ProductCard key={p._id} product={p} index={i} />
-          ))}
-        </div>
-      ) : (
-        <FallbackProducts />
-      )}
-
-      <div style={{ textAlign: 'center', marginTop: 32 }}>
-        <Link href="/produits">
-          <button className="btn btn-g">Voir tous les produits →</button>
-        </Link>
-      </div>
-
-      <style>{`
-        .prod-badge { position:absolute; top:8px; right:8px; background:var(--amber); color:#fff; font-size:.58rem; font-weight:700; padding:2px 7px; border-radius:10px; }
-        .prod-info h4 { font-family:'Raleway',sans-serif; font-size:.8rem; font-weight:700; color:var(--navy); margin-bottom:2px; }
-        .prod-brand { font-size:.65rem; color:var(--tl); margin-bottom:7px; }
-        .prod-price { font-family:'Raleway',sans-serif; font-size:.92rem; font-weight:800; color:var(--gd); }
-        .prod-price small { font-size:.63rem; font-weight:400; color:var(--tl); }
-        .prod-actions { display:flex; gap:5px; margin-top:7px; }
-        .prod-btn { flex:1; background:var(--navy); color:#fff; border:none; padding:7px; border-radius:8px; font-size:.7rem; font-weight:700; cursor:pointer; font-family:'Lato',sans-serif; transition:background .22s; }
-        .prod-btn:hover { background:var(--g); }
-        .prod-wa { background:rgba(37,211,102,.12); color:#128C7E; padding:7px 9px; border-radius:8px; font-size:.78rem; cursor:pointer; border:none; transition:background .22s; }
-        .prod-wa:hover { background:rgba(37,211,102,.2); }
-      `}</style>
-    </section>
-  )
-}
-
-function ProductCard({ product, index }: { product: Product; index: number }) {
-  const price  = product.discountPrice ?? product.price
-  const hasDiscount = product.discountPrice !== null && product.discountPrice !== undefined
+  const getPhoto = (p: Product, idx: number) =>
+    p.images?.[0]?.secureUrl || PROD_PHOTOS[idx % PROD_PHOTOS.length]
 
   return (
-    <Link href={`/produits/${product.slug}`} style={{ textDecoration: 'none' }}>
-      <div className="prod-card">
-        <div style={{
-          height: 132, display: 'flex',
-          alignItems: 'center', justifyContent: 'center',
-          fontSize: '2.4rem', position: 'relative',
-          background: THUMB_COLORS[index % THUMB_COLORS.length],
-        }}>
-          {product.images?.[0]?.secureUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={product.images[0].secureUrl}
-              alt={product.name}
-              style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 12 }}
-            />
-          ) : (
-            FALLBACK_EMOJIS[index % FALLBACK_EMOJIS.length]
-          )}
-          {hasDiscount && <span className="prod-badge">Promo</span>}
+    <section className="sec-g" style={{ padding: '72px 48px' }}>
+      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <span className="slabel">Boutique</span>
+          <h2 className="stitle" style={{ marginTop: 8 }}>Nos <span className="ac">Produits Phares</span></h2>
+          <p className="sdesc" style={{ margin: '8px auto 0', textAlign: 'center' }}>
+            Retrouvez nos équipements solaires sélectionnés pour le marché camerounais.
+          </p>
         </div>
-        <div className="prod-info" style={{ padding: 12 }}>
-          <h4>{product.name}</h4>
-          <div className="prod-brand">{product.category?.name || 'Blue Carbon'}</div>
-          <div className="prod-price">
-            {formatPrice(price)}
-            {hasDiscount && (
-              <small style={{ textDecoration: 'line-through', marginLeft: 6 }}>
-                {formatPrice(product.price)}
-              </small>
-            )}
-          </div>
-          <div className="prod-actions">
-            <button className="prod-btn">Détails</button>
-            <button className="prod-wa" title="Commander via WhatsApp">💬</button>
-          </div>
-        </div>
-      </div>
-    </Link>
-  )
-}
 
-function FallbackProducts() {
-  const MOCK = [
-    { name: 'Panneau Blue Carbon 550W', cat: 'Panneaux Solaires', price: 250000, emoji: '☀️', promo: true  },
-    { name: 'Batterie Lithium 100Ah',   cat: 'Batteries',         price: 185000, emoji: '🔋', promo: false },
-    { name: 'Onduleur Hybride 5kW',     cat: 'Onduleurs',         price: 320000, emoji: '⚡', promo: false },
-    { name: 'Lampadaire Solaire 60W',   cat: 'Éclairage',         price: 95000,  emoji: '💡', promo: true  },
-    { name: 'Régulateur MPPT 40A',      cat: 'Accessoires',       price: 45000,  emoji: '🌿', promo: false },
-  ]
-  return (
-    <div className="rsp-grid-5" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16, marginTop: 8 }}>
-      {MOCK.map((p, i) => (
-        <Link key={p.name} href="/produits" style={{ textDecoration: 'none' }}>
-          <div className="prod-card">
-            <div style={{
-              height: 132, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '2.4rem', position: 'relative',
-              background: THUMB_COLORS[i],
-            }}>
-              {p.emoji}
-              {p.promo && <span className="prod-badge">Promo</span>}
-            </div>
-            <div className="prod-info" style={{ padding: 12 }}>
-              <h4>{p.name}</h4>
-              <div className="prod-brand">{p.cat}</div>
-              <div className="prod-price">{formatPrice(p.price)}</div>
-              <div className="prod-actions">
-                <button className="prod-btn">Détails</button>
-                <button className="prod-wa">💬</button>
+        {/* Bento grid produits */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gridTemplateRows: 'auto auto', gap: 14 }}>
+
+          {/* Gauche — carte côté */}
+          <Link href={`/produits/${sideLeft.slug}`} style={{ textDecoration: 'none' }}>
+            <div style={{ background: '#1E2A3A', borderRadius: 24, overflow: 'hidden', border: '1px solid rgba(255,255,255,.06)', boxShadow: '0 2px 12px rgba(0,0,0,.08)', gridRow: '1 / 3', height: '100%', display: 'flex', flexDirection: 'column', cursor: 'pointer', transition: 'transform .28s', minHeight: 320 }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.transform = ''}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={getPhoto(sideLeft, 0)} alt={sideLeft.name} style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: 14 }} />
+              </div>
+              <div style={{ padding: '0 20px 20px' }}>
+                <span style={{ fontSize: '.6rem', fontWeight: 700, color: '#8CC63F', letterSpacing: '.1em', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>{sideLeft.category?.name}</span>
+                <h3 style={{ fontFamily: 'Raleway,sans-serif', fontSize: '1rem', fontWeight: 800, color: '#fff', marginBottom: 6 }}>{sideLeft.name}</h3>
+                <p style={{ fontSize: '.73rem', color: 'rgba(255,255,255,.55)', lineHeight: 1.6, marginBottom: 14 }}>{sideLeft.description}</p>
+                <div style={{ fontSize: '.75rem', color: 'rgba(255,255,255,.4)', marginBottom: 12 }}>
+                  A partir de <strong style={{ color: '#8CC63F', fontSize: '.88rem' }}>{formatPrice(sideLeft.price)} FCFA</strong>
+                </div>
+                <button className="btn btn-g" style={{ width: '100%', justifyContent: 'center', fontSize: '.78rem' }}>⚡ Commander</button>
               </div>
             </div>
-          </div>
-        </Link>
-      ))}
-    </div>
-  )
-}
+          </Link>
 
-function ProductsSkeleton() {
-  return (
-    <div className="rsp-grid-5" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16 }}>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} style={{
-          background: '#fff', borderRadius: 12,
-          overflow: 'hidden', boxShadow: '0 4px 24px rgba(30,42,58,.09)',
-        }}>
-          <div style={{ height: 132, background: 'linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite' }} />
-          <div style={{ padding: 12 }}>
-            <div style={{ height: 12, background: '#eee', borderRadius: 4, marginBottom: 8, width: '80%' }} />
-            <div style={{ height: 10, background: '#f5f5f5', borderRadius: 4, width: '60%' }} />
+          {/* Centre haut — Kits */}
+          <Link href={`/produits/${sideRight.slug}`} style={{ textDecoration: 'none' }}>
+            <div style={{ background: '#fff', borderRadius: 24, overflow: 'hidden', border: '1px solid rgba(0,0,0,.07)', boxShadow: '0 2px 12px rgba(0,0,0,.06)', cursor: 'pointer', transition: 'transform .28s' }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.transform = ''}>
+              <div style={{ padding: 18, display: 'flex', alignItems: 'center', gap: 12 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={getPhoto(sideRight, 1)} alt={sideRight.name} style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 12, flexShrink: 0 }} />
+                <div>
+                  <h4 style={{ fontFamily: 'Raleway,sans-serif', fontSize: '.84rem', fontWeight: 700, color: '#1E2A3A', marginBottom: 3 }}>{sideRight.name}</h4>
+                  <p style={{ fontSize: '.71rem', color: '#718096', lineHeight: 1.5 }}>{sideRight.description}</p>
+                  <div style={{ marginTop: 8, fontSize: '.74rem', color: '#4a5568' }}>
+                    A partir de : <strong style={{ color: '#6FAE2E' }}>{formatPrice(sideRight.price)} FCFA</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Centre — Featured principal */}
+          <Link href={`/produits/${featured.slug}`} style={{ textDecoration: 'none', gridColumn: '2 / 4', gridRow: '1', display: 'block' }}>
+            <div style={{ background: '#fff', borderRadius: 24, border: '1px solid rgba(0,0,0,.08)', boxShadow: '0 8px 32px rgba(0,0,0,.09)', padding: 32, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', cursor: 'pointer', transition: 'transform .28s' }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.transform = 'translateY(-5px)'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.transform = ''}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={getPhoto(featured, 2)} alt={featured.name} style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: 16, marginBottom: 20 }} />
+              <h3 style={{ fontFamily: 'Raleway,sans-serif', fontSize: '1.05rem', fontWeight: 800, color: '#1E2A3A', marginBottom: 8, lineHeight: 1.25 }}>{featured.name} ✦</h3>
+              <p style={{ fontSize: '.76rem', color: '#718096', lineHeight: 1.6, marginBottom: 16 }}>{featured.description}</p>
+              <div style={{ marginBottom: 16 }}>
+                <span style={{ fontSize: '.72rem', color: '#718096' }}>A partir de : </span>
+                <span style={{ background: '#1E2A3A', color: '#fff', borderRadius: 50, padding: '5px 14px', fontWeight: 700, fontSize: '.85rem' }}>{formatPrice(featured.price)} FCFA</span>
+              </div>
+              <button className="btn btn-dark" style={{ width: '100%', justifyContent: 'center' }}>⚡ Découvrir</button>
+            </div>
+          </Link>
+
+          {/* Droite — Carte côté */}
+          <div style={{ gridRow: '1 / 3', display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {smalls.length > 0 ? smalls.map((p, i) => (
+              <Link key={p._id} href={`/produits/${p.slug}`} style={{ textDecoration: 'none' }}>
+                <div className="bento-prod-sm">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={getPhoto(p, i + 3)} alt={p.name} style={{ width: 54, height: 54, objectFit: 'cover', borderRadius: 10, flexShrink: 0 }} />
+                  <div>
+                    <h5 style={{ fontFamily: 'Raleway,sans-serif', fontSize: '.78rem', fontWeight: 700, color: '#1E2A3A', marginBottom: 2 }}>{p.name}</h5>
+                    <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+                      {p.features?.slice(0, 2).map((f) => (
+                        <li key={f} style={{ fontSize: '.66rem', color: '#718096' }}>· {f}</li>
+                      ))}
+                    </ul>
+                    <div style={{ marginTop: 4, fontSize: '.68rem', color: '#8CC63F', fontWeight: 700 }}>⚡ Voir</div>
+                  </div>
+                </div>
+              </Link>
+            )) : (
+              <>
+                {MOCK_PRODUCTS.slice(3).map((p, i) => (
+                  <Link key={p._id} href={`/produits/${p.slug}`} style={{ textDecoration: 'none' }}>
+                    <div className="bento-prod-sm">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={PROD_PHOTOS[i + 3]} alt={p.name} style={{ width: 54, height: 54, objectFit: 'cover', borderRadius: 10, flexShrink: 0 }} />
+                      <div>
+                        <h5 style={{ fontFamily: 'Raleway,sans-serif', fontSize: '.78rem', fontWeight: 700, color: '#1E2A3A', marginBottom: 2 }}>{p.name}</h5>
+                        <p style={{ fontSize: '.66rem', color: '#718096', lineHeight: 1.4 }}>{p.description?.slice(0, 50)}…</p>
+                        <div style={{ marginTop: 4, fontSize: '.68rem', color: '#8CC63F', fontWeight: 700 }}>⚡ Voir</div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </>
+            )}
           </div>
+
         </div>
-      ))}
-      <style>{`@keyframes shimmer { 0% { background-position:200% 0 } 100% { background-position:-200% 0 } }`}</style>
-    </div>
+
+        <div style={{ textAlign: 'center', marginTop: 32 }}>
+          <Link href="/produits" style={{ textDecoration: 'none' }}>
+            <button className="btn btn-dark">Voir tous les produits →</button>
+          </Link>
+        </div>
+      </div>
+    </section>
   )
 }

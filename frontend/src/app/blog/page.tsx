@@ -39,20 +39,17 @@ export default function BlogPage() {
       <Navbar />
       <main>
         {/* Hero */}
-        <section className="hero" style={{ minHeight: 260, padding: '80px 52px' }}>
-          <div className="hero-floor" />
-          <div className="hc" style={{ zIndex: 10 }}>
-            <div className="chip"><div className="chip-dot" /><span style={{ fontSize: '.68rem', fontWeight: 700, color: '#a8d960', letterSpacing: '.1em', textTransform: 'uppercase' }}>Blog & Actualités</span></div>
-            <h1 style={{ fontFamily: 'Raleway,sans-serif', fontWeight: 800, fontSize: 'clamp(1.8rem,3vw,2.8rem)', color: '#fff', marginBottom: 13 }}>
-              Notre <span className="hl">Blog Solaire</span>
+        <section style={{ paddingTop:100, paddingBottom:48, padding:'100px 48px 48px', background:'#fff' }}>
+          <div style={{ maxWidth:1080, margin:'0 auto' }}>
+            <span className="slabel">Blog & Actualités</span>
+            <h1 className="stitle" style={{ fontSize:'clamp(2rem,4vw,3rem)', marginTop:8 }}>
+              Notre <span className="ac">Blog Solaire</span>
             </h1>
-            <p style={{ fontSize: '.9rem', color: 'rgba(255,255,255,.58)', lineHeight: 1.75 }}>
-              Guides, actualités, conseils et témoignages sur l&apos;énergie solaire au Cameroun.
-            </p>
+            <p className="sdesc">Guides, actualités, conseils et témoignages sur l&apos;énergie solaire au Cameroun.</p>
           </div>
         </section>
 
-        <section className="sec">
+        <section className="sec-alt" style={{ padding:'32px 48px 72px' }}>
           {/* Recherche */}
           <input
             type="search" placeholder="🔍 Rechercher un article…"

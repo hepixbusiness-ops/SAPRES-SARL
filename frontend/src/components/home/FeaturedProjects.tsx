@@ -3,111 +3,108 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { projectsApi } from '@/lib/api'
 import type { Project } from '@/types'
-import RevealWrapper from '@/components/ui/RevealWrapper'
 
-const THUMB_BG = [
-  'linear-gradient(135deg,#0d1a0f,#1e3a20,#2d5a2a)',
-  'linear-gradient(135deg,#0a1525,#1a2d4a,#203560)',
-  'linear-gradient(135deg,#1a0d28,#2a1a40,#3a2055)',
+const PROJ_PHOTOS = [
+  'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=1200&q=80',
+  'https://images.unsplash.com/photo-1548372290-8d01b6c8e78c?auto=format&fit=crop&w=1200&q=80',
+  'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=1200&q=80',
+]
+
+const MOCK_PROJECTS: Project[] = [
+  { _id:'1', title:'Installation d\'un Système Solaire Haute Performance pour Économies Durables.', slug:'50kw-installation-industrielle', shortDescription:'Centrale PV complète pour usine de production.', projectCategory:'Installation Résidentielle', projectType:'Installation', capacity:'50 kW', client:{ name:'ABC Factory', industry:'Manufacturing', location:'Résidence Mballa — Yaoundé' }, description:'', duration:'30 jours', technologiesUsed:[], projectChallenges:[], projectSolutions:[], projectResults:[], featured:true, status:'published', displayOrder:1, completionYear: '2023', createdAt:'', updatedAt:'' },
+  { _id:'2', title:'Électrification Solaire Communautaire — 80 Foyers Village Nkolbisson', slug:'electrification-village-nkolbisson', shortDescription:'Système solaire communautaire pour village rural.', projectCategory:'Résidentiel', projectType:'Electrification', capacity:'15 kW', client:{ name:'Mairie de Nkolbisson', industry:'Public', location:'Yaoundé' }, description:'', duration:'45 jours', technologiesUsed:[], projectChallenges:[], projectSolutions:[], projectResults:[], featured:true, status:'published', displayOrder:2, completionYear:'2022', createdAt:'', updatedAt:'' },
+  { _id:'3', title:'120 Lampadaires Solaires — Commune de Bafoussam', slug:'lampadaires-bafoussam', shortDescription:'Éclairage public solaire pour les principaux axes.', projectCategory:'Éclairage Public', projectType:'Lampadaires', capacity:'60W/unité', client:{ name:'Mairie de Bafoussam', industry:'Collectivité', location:'Bafoussam' }, description:'', duration:'60 jours', technologiesUsed:[], projectChallenges:[], projectSolutions:[], projectResults:[], featured:true, status:'published', displayOrder:3, completionYear:'2024', createdAt:'', updatedAt:'' },
 ]
 
 export default function FeaturedProjects() {
-  const [projects, setProjects] = useState<Project[]>([])
+  const [projects, setProjects] = useState<Project[]>(MOCK_PROJECTS)
+  const [active,   setActive]   = useState(0)
 
   useEffect(() => {
     projectsApi.getFeatured()
-      .then((res) => setProjects(res.data.data || []))
-      .catch(console.error)
+      .then((res) => { if ((res.data.data || []).length >= 2) setProjects(res.data.data) })
+      .catch(() => {})
   }, [])
 
-  const displayed = projects.length > 0 ? projects.slice(0, 3) : MOCK_PROJECTS
+  // Auto-avance
+  useEffect(() => {
+    const t = setInterval(() => setActive(i => (i + 1) % projects.length), 5000)
+    return () => clearInterval(t)
+  }, [projects.length])
+
+  const proj  = projects[active]
+  const photo = proj.featuredImage?.secureUrl || PROJ_PHOTOS[active % PROJ_PHOTOS.length]
 
   return (
-    <section className="sec">
-      <RevealWrapper><span className="slabel">Nos Réalisations</span></RevealWrapper>
-      <RevealWrapper delay={1}>
-        <h2 className="stitle">Projets qui <span className="ac">Parlent d&apos;Eux-Mêmes</span></h2>
-      </RevealWrapper>
-      <RevealWrapper delay={2}>
-        <p className="sdesc">
-          Découvrez quelques-uns de nos projets réalisés à travers le Cameroun,
-          des installations résidentielles aux centrales industrielles.
-        </p>
-      </RevealWrapper>
+    <section className="sec-alt" style={{ padding: '72px 48px' }}>
+      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <span className="slabel">Nos Réalisations</span>
+            <h2 className="stitle" style={{ marginTop: 8 }}>Projets qui <span className="ac">Parlent d&apos;Eux-Mêmes</span></h2>
+          </div>
+          <Link href="/realisations" style={{ textDecoration: 'none' }}>
+            <button className="btn btn-outline">Voir tous →</button>
+          </Link>
+        </div>
 
-      <div className="rsp-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 18, marginTop: 24 }}>
-        {displayed.map((p, i) => (
-          <RevealWrapper key={p._id || i} delay={((i % 3) + 1) as 1|2|3}>
-            <Link href={`/realisations/${p.slug}`} style={{ textDecoration: 'none' }}>
-              <div className="proj-card">
-                <div className="proj-thumb" style={{ background: THUMB_BG[i % 3], height: 165, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.1rem', position: 'relative' }}>
-                  {p.featuredImage?.secureUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.featuredImage.secureUrl} alt={p.title}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
-                  ) : (
-                    ['🏠', '🏭', '🏙️'][i % 3]
-                  )}
-                  <div className="proj-ov" />
-                  <span className="proj-lbl">{p.projectCategory || 'Solaire'}</span>
-                </div>
-                <div className="proj-info" style={{ padding: 17 }}>
-                  <h3 style={{ fontFamily: 'Raleway,sans-serif', fontSize: '.87rem', fontWeight: 700, color: '#1E2A3A', marginBottom: 5 }}>{p.title}</h3>
-                  <p style={{ fontSize: '.77rem', color: '#4a5568', lineHeight: 1.65 }}>{p.shortDescription}</p>
-                  <div className="proj-meta" style={{ display: 'flex', gap: 5, marginTop: 10, flexWrap: 'wrap' }}>
-                    {p.capacity && <span>{p.capacity}</span>}
-                    {p.client?.location && <span>{p.client.location}</span>}
-                    {p.duration && <span>{p.duration}</span>}
-                  </div>
-                </div>
-              </div>
+        {/* Slide principal */}
+        <div style={{ borderRadius: 28, overflow: 'hidden', position: 'relative', height: 420, boxShadow: '0 12px 48px rgba(0,0,0,.14)' }}>
+          {/* Breadcrumb */}
+          <div style={{ position: 'absolute', top: 18, left: 22, zIndex: 10, display: 'flex', gap: 6, alignItems: 'center' }}>
+            <span style={{ background: 'rgba(255,255,255,.18)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,.25)', borderRadius: 50, padding: '4px 12px', fontSize: '.66rem', fontWeight: 700, color: '#fff' }}>
+              Nos Réalisations
+            </span>
+            <span style={{ color: 'rgba(255,255,255,.5)', fontSize: '.66rem' }}>/</span>
+            <span style={{ background: 'rgba(255,255,255,.18)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,.25)', borderRadius: 50, padding: '4px 12px', fontSize: '.66rem', fontWeight: 700, color: '#fff' }}>
+              {proj.projectCategory}
+            </span>
+          </div>
+
+          {/* Photo */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={photo} alt={proj.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'opacity .5s' }} />
+
+          {/* Gradient overlay */}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.18) 50%, transparent 100%)' }} />
+
+          {/* Contenu texte */}
+          <div style={{ position: 'absolute', bottom: 28, left: 28, right: 28, zIndex: 10 }}>
+            <div style={{ fontSize: '.72rem', color: 'rgba(255,255,255,.55)', marginBottom: 8 }}>
+              {(proj as any).completionYear || '2024'}
+            </div>
+            <h3 style={{ fontFamily: 'Raleway,sans-serif', fontWeight: 800, fontSize: 'clamp(1.1rem,2.5vw,1.6rem)', color: '#fff', marginBottom: 8, lineHeight: 1.2, maxWidth: 520 }}>
+              {proj.title}
+            </h3>
+            <div style={{ fontSize: '.8rem', color: 'rgba(255,255,255,.6)', marginBottom: 18 }}>
+              {proj.client?.location}
+            </div>
+            <Link href={`/realisations/${proj.slug}`} style={{ textDecoration: 'none' }}>
+              <button className="btn btn-white" style={{ fontSize: '.78rem' }}>Voir le projet →</button>
             </Link>
-          </RevealWrapper>
-        ))}
-      </div>
+          </div>
 
-      <div style={{ textAlign: 'center', marginTop: 32 }}>
-        <Link href="/realisations">
-          <button className="btn btn-g">Voir toutes les réalisations →</button>
-        </Link>
-      </div>
+          {/* Dots navigation */}
+          <div style={{ position: 'absolute', bottom: 28, right: 28, display: 'flex', gap: 6 }}>
+            {projects.map((_, i) => (
+              <button key={i} onClick={() => setActive(i)} style={{ width: i === active ? 24 : 8, height: 8, borderRadius: 4, background: i === active ? '#8CC63F' : 'rgba(255,255,255,.4)', border: 'none', cursor: 'pointer', transition: 'all .3s', padding: 0 }} />
+            ))}
+          </div>
+        </div>
 
-      <style>{`
-        .proj-card { border-radius:var(--rl); overflow:hidden; box-shadow:var(--sh); background:#fff; transition:transform .3s,box-shadow .3s; }
-        .proj-card:hover { transform:translateY(-8px); box-shadow:0 24px 52px rgba(30,42,58,.15); }
-        .proj-thumb { position:relative; }
-        .proj-ov { position:absolute; inset:0; background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.46)); opacity:0; transition:opacity .27s; }
-        .proj-card:hover .proj-ov { opacity:1; }
-        .proj-lbl { position:absolute; top:10px; left:10px; background:var(--g); color:#fff; font-size:.62rem; font-weight:700; padding:3px 9px; border-radius:15px; }
-        .proj-meta span { background:rgba(140,198,63,.08); color:var(--gd); font-size:.63rem; font-weight:700; padding:2px 8px; border-radius:10px; }
-      `}</style>
+        {/* Miniatures */}
+        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${projects.length},1fr)`, gap: 10, marginTop: 12 }}>
+          {projects.map((p, i) => {
+            const th = p.featuredImage?.secureUrl || PROJ_PHOTOS[i % PROJ_PHOTOS.length]
+            return (
+              <button key={p._id} onClick={() => setActive(i)} style={{ background: 'none', border: i === active ? '2px solid #8CC63F' : '2px solid transparent', borderRadius: 14, overflow: 'hidden', cursor: 'pointer', padding: 0, transition: 'border-color .22s', opacity: i === active ? 1 : 0.6 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={th} alt={p.title} style={{ width: '100%', height: 70, objectFit: 'cover', display: 'block' }} />
+              </button>
+            )
+          })}
+        </div>
+      </div>
     </section>
   )
 }
-
-const MOCK_PROJECTS: Project[] = [
-  {
-    _id: '1', title: '50kW Installation Industrielle ABC Factory',
-    slug: '50kw-installation-industrielle', shortDescription: 'Centrale PV complète pour usine de production.',
-    projectCategory: 'Industriel', projectType: 'Installation', capacity: '50 kW',
-    client: { name: 'ABC Factory', industry: 'Manufacturing', location: 'Douala' },
-    description: '', duration: '30 jours', technologiesUsed: [], projectChallenges: [], projectSolutions: [], projectResults: [],
-    featured: true, status: 'published', displayOrder: 1, createdAt: '', updatedAt: '',
-  },
-  {
-    _id: '2', title: 'Électrification Solaire — 80 Foyers, Village Nkolbisson',
-    slug: 'electrification-village-nkolbisson', shortDescription: 'Système solaire communautaire pour village rural.',
-    projectCategory: 'Résidentiel', projectType: 'Electrification', capacity: '15 kW',
-    client: { name: 'Mairie de Nkolbisson', industry: 'Public', location: 'Yaoundé' },
-    description: '', duration: '45 jours', technologiesUsed: [], projectChallenges: [], projectSolutions: [], projectResults: [],
-    featured: true, status: 'published', displayOrder: 2, createdAt: '', updatedAt: '',
-  },
-  {
-    _id: '3', title: '120 Lampadaires Solaires — Commune de Bafoussam',
-    slug: 'lampadaires-bafoussam', shortDescription: 'Éclairage public solaire pour les principaux axes de la ville.',
-    projectCategory: 'Éclairage Public', projectType: 'Lampadaires', capacity: '60W/unité',
-    client: { name: 'Mairie de Bafoussam', industry: 'Collectivité', location: 'Bafoussam' },
-    description: '', duration: '60 jours', technologiesUsed: [], projectChallenges: [], projectSolutions: [], projectResults: [],
-    featured: true, status: 'published', displayOrder: 3, createdAt: '', updatedAt: '',
-  },
-]

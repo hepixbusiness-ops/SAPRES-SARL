@@ -2,65 +2,54 @@
 import { useEffect, useRef, useState } from 'react'
 
 const STATS = [
-  { to: 500, suffix: '+',    label: 'Clients Satisfaits'  },
-  { to: 300, suffix: '+',    label: 'Projets Réalisés'    },
-  { to: 10,  suffix: ' MW',  label: 'Capacité Installée'  },
-  { to: 10,  suffix: ' ans', label: "Années d'Expérience" },
+  { to: 500,  suffix: '+',    label: 'Clients Satisfaits',       icon: '😊' },
+  { to: 5,    suffix: ' MW',  label: 'Capacité Installée',        icon: '⚡' },
+  { to: 70,   suffix: '%',    label: 'Économies sur ENEO',        icon: '💰' },
+  { to: 25,   suffix: ' ans', label: 'Garantie Produits',         icon: '🛡️' },
 ]
 
+function useCount(target: number, active: boolean) {
+  const [val, setVal] = useState(0)
+  useEffect(() => {
+    if (!active) return
+    let start = 0
+    const step = Math.ceil(target / 50)
+    const t = setInterval(() => {
+      start = Math.min(start + step, target)
+      setVal(start)
+      if (start >= target) clearInterval(t)
+    }, 24)
+    return () => clearInterval(t)
+  }, [target, active])
+  return val
+}
+
+function StatCard({ stat, active }: { stat: typeof STATS[0]; active: boolean }) {
+  const val = useCount(stat.to, active)
+  return (
+    <div className="stat-light">
+      <div style={{ fontSize: '1.5rem', marginBottom: 6 }}>{stat.icon}</div>
+      <div className="n">{val}<span className="u">{stat.suffix}</span></div>
+      <div className="l">{stat.label}</div>
+    </div>
+  )
+}
+
 export default function StatsSection() {
-  const ref = useRef<HTMLDivElement>(null)
-  const [started, setStarted] = useState(false)
-  const [values, setValues] = useState(STATS.map(() => 0))
+  const ref    = useRef<HTMLDivElement>(null)
+  const [active, setActive] = useState(false)
 
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !started) {
-          setStarted(true)
-          STATS.forEach((s, i) => {
-            let current = 0
-            const step = Math.ceil(s.to / 60)
-            const interval = setInterval(() => {
-              current = Math.min(current + step, s.to)
-              setValues((prev) => prev.map((v, j) => (j === i ? current : v)))
-              if (current >= s.to) clearInterval(interval)
-            }, 25)
-          })
-        }
-      },
-      { threshold: 0.3 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [started])
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setActive(true); obs.disconnect() } }, { threshold: 0.2 })
+    if (ref.current) obs.observe(ref.current)
+    return () => obs.disconnect()
+  }, [])
 
   return (
-    <section className="sec-gr">
-      <div ref={ref} className="rsp-grid-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
-        {STATS.map((s, i) => (
-          <div key={s.label} className="stat">
-            <div className="n" style={{
-              fontFamily: 'Raleway, sans-serif',
-              fontSize: '2.65rem', fontWeight: 800,
-              color: '#fff', lineHeight: 1,
-              marginBottom: 6,
-            }}>
-              {values[i]}{s.suffix}
-            </div>
-            <div className="l" style={{
-              fontSize: '.77rem', fontWeight: 500,
-              color: 'rgba(255,255,255,.66)',
-              letterSpacing: '.04em',
-            }}>
-              {s.label}
-            </div>
-          </div>
-        ))}
+    <section className="sec" style={{ padding: '56px 48px', borderTop: '1px solid rgba(0,0,0,.06)', borderBottom: '1px solid rgba(0,0,0,.06)' }}>
+      <div ref={ref} className="rsp-grid-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0, maxWidth: 1080, margin: '0 auto' }}>
+        {STATS.map((s) => <StatCard key={s.label} stat={s} active={active} />)}
       </div>
-
     </section>
   )
 }
