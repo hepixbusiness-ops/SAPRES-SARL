@@ -375,11 +375,92 @@ footer { background: var(--navy); color: rgba(255,255,255,.75); padding: 56px 48
 /* ============================================================
    BENTO PRODUCTS GRID
    ============================================================ */
-.bento-products { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 14px; max-width: 1080px; margin: 0 auto; }
-.bento-prod-feat { grid-column: 2 / 4; grid-row: 1; background: #fff; border-radius: var(--rxl); overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shm); padding: 32px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-.bento-prod-side { background: #fff; border-radius: var(--rxl); overflow: hidden; border: 1px solid var(--border); box-shadow: var(--sh); }
-.bento-prod-sm { background: #fff; border-radius: var(--rl); overflow: hidden; border: 1px solid var(--border); box-shadow: var(--sh); padding: 16px; display: flex; align-items: center; gap: 12px; transition: transform .28s, box-shadow .28s; cursor: pointer; }
+/* Grille principale */
+.bpg {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 14px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+/* Carte gauche sombre — span 2 rows */
+.bpg-left {
+  grid-column: 1; grid-row: 1 / 3;
+  background: #1E2A3A;
+  border-radius: var(--rxl);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.06);
+  box-shadow: var(--sh);
+  display: flex; flex-direction: column;
+  cursor: pointer; transition: transform .28s;
+  min-height: 320px;
+}
+.bpg-left:hover { transform: translateY(-4px); }
+/* Carte centrale featured — row 1 */
+.bpg-feat {
+  grid-column: 2; grid-row: 1;
+  background: #fff;
+  border-radius: var(--rxl);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shm);
+  padding: 28px;
+  display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+  cursor: pointer; transition: transform .28s;
+}
+.bpg-feat:hover { transform: translateY(-5px); }
+/* Carte kits — row 2 (sous la featured) */
+.bpg-kits {
+  grid-column: 2; grid-row: 2;
+  background: #fff;
+  border-radius: var(--rl);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--sh);
+  cursor: pointer; transition: transform .28s;
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px;
+}
+.bpg-kits:hover { transform: translateY(-3px); }
+/* Colonne droite — span 2 rows */
+.bpg-right {
+  grid-column: 3; grid-row: 1 / 3;
+  display: flex; flex-direction: column; gap: 12px;
+}
+/* Petite carte produit */
+.bento-prod-sm {
+  background: #fff;
+  border-radius: var(--rl);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--sh);
+  padding: 16px;
+  display: flex; align-items: center; gap: 12px;
+  transition: transform .28s, box-shadow .28s;
+  cursor: pointer;
+}
 .bento-prod-sm:hover { transform: translateY(-3px); box-shadow: var(--shm); }
+
+/* Tablette */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .bpg { grid-template-columns: 1fr 1fr; grid-template-rows: auto; gap: 12px; }
+  .bpg-left  { grid-column: 1; grid-row: 1 / 3; min-height: 280px; }
+  .bpg-feat  { grid-column: 2; grid-row: 1; }
+  .bpg-kits  { grid-column: 2; grid-row: 2; }
+  .bpg-right { grid-column: 1 / 3; grid-row: 3; flex-direction: row; flex-wrap: wrap; }
+  .bpg-right > * { flex: 1 1 calc(33% - 8px); min-width: 0; }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .bpg { grid-template-columns: 1fr; gap: 12px; }
+  .bpg-left  { grid-column: 1; grid-row: auto; min-height: 220px; }
+  .bpg-feat  { grid-column: 1; grid-row: auto; padding: 20px; }
+  .bpg-kits  { grid-column: 1; grid-row: auto; }
+  .bpg-right { grid-column: 1; grid-row: auto; flex-direction: column; }
+}
 
 /* ============================================================
    TIMELINE (À Propos)
