@@ -86,7 +86,7 @@ export default function RealisationsPage() {
           {loading ? (
             <div className="rsp-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 18 }}>
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 24px rgba(30,42,58,.09)', height: 280 }} />
+                <div key={i} style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 24px rgba(30,42,58,.09)', height: 280, opacity: 0.5 }} />
               ))}
             </div>
           ) : (

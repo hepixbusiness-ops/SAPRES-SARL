@@ -116,7 +116,7 @@ export default function DevisPage() {
                   </h3>
                   <p style={{ fontSize: '.8rem', color: '#718096', marginBottom: 20 }}>Étape 1 sur 3 — Coordonnées personnelles</p>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  <div className="rsp-form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                     <div className="fg">
                       <label>Nom complet *</label>
                       <input name="fullName" value={form.fullName} onChange={handleChange} placeholder="Jean Dupont" required />
@@ -179,7 +179,7 @@ export default function DevisPage() {
                     </select>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  <div className="rsp-form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                     <div className="fg">
                       <label>Budget estimé</label>
                       <select name="budgetRange" value={form.budgetRange} onChange={handleChange}>
