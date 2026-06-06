@@ -9,7 +9,7 @@ const BENEFITS = [
   { icon: '👍', title: 'Tarification Transparente & Accessible', desc: 'Des devis clairs, sans frais cachés. Solutions adaptées à tous les budgets avec facilités de paiement.' },
 ]
 
-const HERO_PHOTO = 'https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=900&q=80'
+const HERO_PHOTO = '/projet-residentiel-1.webp'
 
 const CYCLE_STATS = [
   { n: '500+', label: 'Installations réalisées' },

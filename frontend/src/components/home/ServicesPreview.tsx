@@ -7,8 +7,8 @@ const SERVICES_LIST = [
   { icon: '💧', title: 'Système de Pompage Solaire', desc: 'Alimentation de forages et systèmes d\'irrigation agricole grâce à l\'énergie solaire, sans groupe électrogène.' },
 ]
 
-const PHOTO1 = 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=600&q=80'
-const PHOTO2 = 'https://images.unsplash.com/photo-1611365892117-bede7a956882?auto=format&fit=crop&w=600&q=80'
+const PHOTO1 = '/projet-station-service.webp'
+const PHOTO2 = '/projet-pompage-solaire.webp'
 
 export default function ServicesPreview() {
   return (

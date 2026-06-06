@@ -5,9 +5,9 @@ import { blogsApi } from '@/lib/api'
 import type { Blog } from '@/types'
 
 const BLOG_PHOTOS = [
-  'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1611365892117-bede7a956882?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1559827291-72ee739d0d9a?auto=format&fit=crop&w=600&q=80',
+  '/projet-residentiel-1.webp',
+  '/projet-pompage-solaire.webp',
+  '/projet-residentiel-2.webp',
 ]
 
 const MOCK_BLOGS: Blog[] = [

@@ -5,9 +5,9 @@ import { projectsApi } from '@/lib/api'
 import type { Project } from '@/types'
 
 const PROJ_PHOTOS = [
-  'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1548372290-8d01b6c8e78c?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=1200&q=80',
+  '/projet-station-service.webp',
+  '/projet-residentiel-1.webp',
+  '/projet-residentiel-2.webp',
 ]
 
 const MOCK_PROJECTS: Project[] = [
