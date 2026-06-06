@@ -363,12 +363,201 @@ footer { background: var(--navy); color: rgba(255,255,255,.75); padding: 56px 48
 .prod-modal-ov.show .prod-modal { transform: translate(-50%,-50%) scale(1); opacity: 1; }
 
 /* ============================================================
-   ANIMATIONS
+   ANIMATIONS — Keyframes
+   ============================================================ */
+
+/* Flottement vertical doux */
+@keyframes floatY {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-12px); }
+}
+/* Flottement lent (orbes) */
+@keyframes floatSlow {
+  0%,100% { transform: translateY(0) scale(1); }
+  33%     { transform: translateY(-20px) scale(1.04); }
+  66%     { transform: translateY(10px) scale(.97); }
+}
+/* Dérive horizontale + verticale */
+@keyframes drift {
+  0%,100% { transform: translate(0,0) scale(1); }
+  25%     { transform: translate(14px,-10px) scale(1.03); }
+  50%     { transform: translate(-8px,16px) scale(.97); }
+  75%     { transform: translate(-16px,-6px) scale(1.02); }
+}
+/* Entrée depuis le bas */
+@keyframes fadeInUp {
+  from { opacity:0; transform:translateY(28px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+/* Entrée depuis la gauche */
+@keyframes fadeInLeft {
+  from { opacity:0; transform:translateX(-24px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+/* Entrée depuis la droite */
+@keyframes fadeInRight {
+  from { opacity:0; transform:translateX(24px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+/* Zoom discret — Ken Burns */
+@keyframes kenBurns {
+  from { transform: scale(1); }
+  to   { transform: scale(1.06); }
+}
+/* Pulsation lumineuse */
+@keyframes glowPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(140,198,63,.45); }
+  50%     { box-shadow: 0 0 0 14px rgba(140,198,63,0); }
+}
+/* Shimmer sur bouton */
+@keyframes shimmerBtn {
+  from { background-position: -200% center; }
+  to   { background-position: 200% center; }
+}
+/* Rotation lente */
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+/* Pulsation scale */
+@keyframes pulseBeat {
+  0%,100% { transform: scale(1); }
+  50%     { transform: scale(1.08); }
+}
+/* Gradient animé horizontal */
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+/* Compteur — fade up */
+@keyframes countFadeUp {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+/* Lignes en mouvement (fond déco) */
+@keyframes lineDraw {
+  from { stroke-dashoffset: 1000; }
+  to   { stroke-dashoffset: 0; }
+}
+/* Cross-fade slide */
+@keyframes crossFadeIn {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
+
+/* ============================================================
+   ANIMATIONS — Classes utilitaires
    ============================================================ */
 .orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
 .bar-fill { transition: width 1.2s cubic-bezier(.4,0,.2,1); }
-.rv { opacity: 0; transform: translateY(16px); }
+.rv { opacity: 0; transform: translateY(16px); transition: opacity .5s ease, transform .5s ease; }
 .rv.show { opacity: 1; transform: none; }
+
+/* Délais échelonnés pour stagger */
+.rv.d1  { transition-delay: .08s }  .rv.d2  { transition-delay: .16s }
+.rv.d3  { transition-delay: .24s }  .rv.d4  { transition-delay: .32s }
+.rv.d5  { transition-delay: .40s }  .rv.d6  { transition-delay: .48s }
+
+/* Float permanent */
+.anim-float  { animation: floatY 3.6s ease-in-out infinite; }
+.anim-float2 { animation: floatY 4.8s ease-in-out infinite .8s; }
+.anim-float3 { animation: floatY 5.4s ease-in-out infinite 1.4s; }
+
+/* Fade in au chargement */
+.anim-in    { animation: fadeInUp   .7s ease both; }
+.anim-in-l  { animation: fadeInLeft .7s ease both; }
+.anim-in-r  { animation: fadeInRight .7s ease both; }
+.anim-in.d1 { animation-delay:.1s } .anim-in.d2 { animation-delay:.2s }
+.anim-in.d3 { animation-delay:.3s } .anim-in.d4 { animation-delay:.4s }
+.anim-in.d5 { animation-delay:.5s }
+
+/* Orbes de fond */
+.hero-orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(70px); pointer-events: none; z-index: 0;
+}
+.hero-orb.o1 { width:280px; height:280px; background:rgba(140,198,63,.13); top:-40px; left:-60px; animation: drift 9s ease-in-out infinite; }
+.hero-orb.o2 { width:220px; height:220px; background:rgba(107,174,46,.09); bottom:-20px; right:-40px; animation: drift 12s ease-in-out infinite 2s; }
+.hero-orb.o3 { width:160px; height:160px; background:rgba(30,42,58,.06); top:40%; right:10%; animation: floatSlow 14s ease-in-out infinite 1s; }
+
+/* Bouton pulsant */
+.btn-pulse { animation: glowPulse 2.2s ease-in-out infinite; }
+
+/* Bouton shimmer */
+.btn-shimmer {
+  background: linear-gradient(110deg, var(--g) 30%, var(--gl) 50%, var(--g) 70%);
+  background-size: 200% auto;
+}
+.btn-shimmer:hover { animation: shimmerBtn .8s linear; }
+
+/* Icône pulsante */
+.icon-pulse { animation: pulseBeat 2.4s ease-in-out infinite; }
+
+/* Ken Burns wrapper */
+.ken-burns-wrap { overflow: hidden; }
+.ken-burns-wrap img { animation: kenBurns 8s ease-in-out alternate infinite; }
+
+/* Carte avec hover élaboré */
+.card-anim {
+  transition: transform .32s cubic-bezier(.34,1.56,.64,1), box-shadow .32s ease;
+}
+.card-anim:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 16px 44px rgba(0,0,0,.12);
+}
+
+/* Tag animé au hover */
+.tag-hover {
+  transition: all .22s ease;
+  cursor: default;
+}
+.tag-hover:hover {
+  background: var(--g) !important;
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(140,198,63,.3);
+}
+
+/* Slabel gradient animé */
+.slabel-anim {
+  background: linear-gradient(90deg, var(--g), var(--gl), var(--gd), var(--g));
+  background-size: 300% auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 4s linear infinite;
+  border: none !important;
+  padding: 0 !important;
+  display: inline-block;
+  font-size: .67rem; font-weight: 700;
+  letter-spacing: .17em; text-transform: uppercase;
+}
+
+/* Underline animé */
+.link-underline {
+  position: relative;
+  text-decoration: none;
+}
+.link-underline::after {
+  content: '';
+  position: absolute; bottom: -2px; left: 0;
+  width: 0; height: 2px;
+  background: var(--g);
+  transition: width .3s ease;
+}
+.link-underline:hover::after { width: 100%; }
+
+/* Cross-fade slide transition */
+.slide-fade { animation: crossFadeIn .5s ease both; }
+
+/* Ligne de scan décorative */
+.scan-line {
+  position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background: linear-gradient(180deg, transparent 0%, rgba(140,198,63,.03) 50%, transparent 100%);
+  background-size: 100% 40px;
+  animation: floatY 3s ease-in-out infinite;
+}
+
 #scroll-bar { display: block !important; }
 .wa-btn { animation: waP 2.5s ease-in-out infinite !important; }
 
