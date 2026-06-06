@@ -4,9 +4,9 @@ import { testimonialsApi } from '@/lib/api'
 import type { Testimonial } from '@/types'
 
 const MOCK: Testimonial[] = [
-  { _id:'1', clientName:'Jean-Pierre Foning', clientTitle:'Chef d\'entreprise, Yaoundé', rating:5, content:'SAPRES a transformé notre usine. On économise 2,5M FCFA par mois sur la facture ENEO. L\'équipe est professionnelle et réactive.', isApproved:true, isFeatured:true, createdAt:'' },
-  { _id:'2', clientName:'Marie Nkomo', clientTitle:'Résidence familiale, Douala', rating:5, content:'Installation impeccable en 5 jours. Depuis 6 mois, plus de coupures d\'électricité et nos factures ont chuté de 80%. Je recommande vivement !', isApproved:true, isFeatured:true, createdAt:'' },
-  { _id:'3', clientName:'Commune de Bafoussam', clientTitle:'Service technique municipal', rating:5, content:'Les 120 lampadaires solaires fonctionnent parfaitement depuis 2 ans. Zéro facture ENEO pour l\'éclairage public. Excellent rapport qualité-prix.', isApproved:true, isFeatured:true, createdAt:'' },
+  { _id:'1', clientName:'Jean-Pierre Foning', position:'Chef d\'entreprise', company:'Yaoundé', rating:5, testimonial:'SAPRES a transformé notre usine. On économise 2,5M FCFA par mois sur la facture ENEO. L\'équipe est professionnelle et réactive.', featured:true, status:'published', displayOrder:1, createdAt:'' },
+  { _id:'2', clientName:'Marie Nkomo', position:'Propriétaire', company:'Douala', rating:5, testimonial:'Installation impeccable en 5 jours. Depuis 6 mois, plus de coupures d\'électricité et nos factures ont chuté de 80%. Je recommande vivement !', featured:true, status:'published', displayOrder:2, createdAt:'' },
+  { _id:'3', clientName:'Commune de Bafoussam', position:'Service technique municipal', company:'Bafoussam', rating:5, testimonial:'Les 120 lampadaires solaires fonctionnent parfaitement depuis 2 ans. Zéro facture ENEO pour l\'éclairage public. Excellent rapport qualité-prix.', featured:true, status:'published', displayOrder:3, createdAt:'' },
 ]
 
 const AVATARS = ['👨‍💼', '👩‍🏠', '🏛️']
@@ -17,7 +17,7 @@ export default function TestimonialsSection() {
   const wRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    testimonialsApi?.getAll?.({ limit: 6 })
+    testimonialsApi?.getAll?.({ featured: true, limit: 6 })
       .then((r) => { if (r.data.data?.length >= 2) setTestimonials(r.data.data) })
       .catch(() => {})
   }, [])
@@ -41,17 +41,17 @@ export default function TestimonialsSection() {
                 ))}
               </div>
               <p style={{ fontSize: '.84rem', color: '#4a5568', lineHeight: 1.75, marginBottom: 18, fontStyle: 'italic' }}>
-                &ldquo;{t.content}&rdquo;
+                &ldquo;{t.testimonial}&rdquo;
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#f0f4e8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', flexShrink: 0 }}>
-                  {t.avatar?.secureUrl
-                    ? <img src={t.avatar.secureUrl} alt={t.clientName} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                  {t.photo?.secureUrl
+                    ? <img src={t.photo.secureUrl} alt={t.clientName} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                     : AVATARS[i % AVATARS.length]}
                 </div>
                 <div>
                   <div style={{ fontFamily: 'Raleway,sans-serif', fontSize: '.82rem', fontWeight: 700, color: '#1E2A3A' }}>{t.clientName}</div>
-                  <div style={{ fontSize: '.7rem', color: '#718096' }}>{t.clientTitle}</div>
+                  <div style={{ fontSize: '.7rem', color: '#718096' }}>{t.position || t.company}</div>
                 </div>
               </div>
             </div>

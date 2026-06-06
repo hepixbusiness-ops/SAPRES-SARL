@@ -1,7 +1,10 @@
 'use client'
+import { useEffect, useState } from 'react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import CTABand from '@/components/home/CTABand'
+import { partnersApi, certificationsApi } from '@/lib/api'
+import type { Partner, Certification } from '@/types'
 
 const TIMELINE = [
   { year:'2014', title:'Fondation de SAPRES SARL', desc:'Création de la société à Yaoundé avec pour mission de démocratiser l\'énergie solaire au Cameroun.' },
@@ -20,6 +23,19 @@ const TEAM = [
 ]
 
 export default function AProposPage() {
+  const [partners,       setPartners]       = useState<Partner[]>([])
+  const [certifications, setCertifications] = useState<Certification[]>([])
+
+  // Module 12 — GET /partners & GET /certifications
+  useEffect(() => {
+    partnersApi.getAll()
+      .then((res) => setPartners(res.data.data || []))
+      .catch(() => {})
+    certificationsApi.getAll()
+      .then((res) => setCertifications(res.data.data || []))
+      .catch(() => {})
+  }, [])
+
   return (
     <>
       <Navbar />
@@ -85,6 +101,54 @@ export default function AProposPage() {
             </div>
           </div>
         </section>
+
+        {/* Partenaires — GET /partners */}
+        {partners.length > 0 && (
+          <section className="sec-alt" style={{ padding:'48px 48px' }}>
+            <div style={{ maxWidth:1080, margin:'0 auto' }}>
+              <span className="slabel">Partenaires</span>
+              <h2 className="stitle" style={{ marginTop:8, marginBottom:28 }}>Nos <span className="ac">Partenaires</span></h2>
+              <div style={{ display:'flex', flexWrap:'wrap', gap:16, justifyContent:'center' }}>
+                {partners.map(p => (
+                  <a key={p._id} href={p.website || '#'} target="_blank" rel="noopener noreferrer"
+                    style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:8, padding:'18px 24px', background:'#fff', borderRadius:16, border:'1px solid rgba(0,0,0,.07)', boxShadow:'0 2px 12px rgba(0,0,0,.05)', textDecoration:'none', minWidth:130, transition:'transform .28s' }}
+                    onMouseEnter={e=>(e.currentTarget as HTMLElement).style.transform='translateY(-4px)'}
+                    onMouseLeave={e=>(e.currentTarget as HTMLElement).style.transform=''}>
+                    {p.logo?.secureUrl
+                      ? <img src={p.logo.secureUrl} alt={p.name} style={{ height:48, objectFit:'contain' }} />
+                      : <div style={{ width:48, height:48, background:'#f0f4e8', borderRadius:10, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.4rem' }}>🤝</div>}
+                    <span style={{ fontSize:'.73rem', fontWeight:700, color:'#1E2A3A', textAlign:'center' }}>{p.name}</span>
+                    <span style={{ fontSize:'.62rem', color:'#8CC63F', fontWeight:700 }}>{p.type}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Certifications — GET /certifications */}
+        {certifications.length > 0 && (
+          <section className="sec" style={{ padding:'48px 48px' }}>
+            <div style={{ maxWidth:1080, margin:'0 auto' }}>
+              <span className="slabel">Qualité & Confiance</span>
+              <h2 className="stitle" style={{ marginTop:8, marginBottom:28 }}>Nos <span className="ac">Certifications</span></h2>
+              <div className="rsp-grid-3" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
+                {certifications.map(c => (
+                  <div key={c._id} style={{ background:'#fff', borderRadius:16, padding:20, border:'1px solid rgba(0,0,0,.07)', boxShadow:'0 2px 12px rgba(0,0,0,.05)' }}>
+                    {c.certificateImage?.secureUrl
+                      ? <img src={c.certificateImage.secureUrl} alt={c.name} style={{ width:'100%', height:100, objectFit:'contain', marginBottom:12 }} />
+                      : <div style={{ height:60, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'2rem', marginBottom:12 }}>🏆</div>}
+                    <h4 style={{ fontFamily:'Raleway,sans-serif', fontSize:'.84rem', fontWeight:700, color:'#1E2A3A', marginBottom:4 }}>{c.name}</h4>
+                    <p style={{ fontSize:'.72rem', color:'#4a5568', marginBottom:6 }}>{c.issuingOrganization}</p>
+                    <span style={{ fontSize:'.62rem', color: c.status === 'active' ? '#6FAE2E' : '#EF4444', fontWeight:700 }}>
+                      {c.status === 'active' ? '✓ Valide' : '⚠ Expiré'} · {new Date(c.expiryDate).getFullYear()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Blue Carbon */}
         <section className="sec-alt" style={{ padding:'48px 48px' }}>

@@ -26,7 +26,7 @@ export default function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS)
 
   useEffect(() => {
-    productsApi.getAll({ isFeatured: true, status: 'published', limit: 6 })
+    productsApi.getAll({ featured: true, status: 'published', limit: 6 })
       .then((res) => { if (res.data.data?.length >= 3) setProducts(res.data.data) })
       .catch(() => {})
   }, [])

@@ -1,5 +1,9 @@
+'use client'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { settingsApi } from '@/lib/api'
+import type { SiteSettings } from '@/types'
 
 const LINKS_ENTREPRISE = [
   { href: '/a-propos',     label: 'À Propos' },
@@ -26,6 +30,22 @@ const LINKS_PRODUITS = [
 ]
 
 export default function Footer() {
+  const [settings, setSettings] = useState<SiteSettings | null>(null)
+
+  // Charger depuis GET /settings (Module 11)
+  useEffect(() => {
+    settingsApi.get()
+      .then((res) => setSettings(res.data.data))
+      .catch(() => {})
+  }, [])
+
+  const socials = [
+    { icon: 'f',  label: 'Facebook',  href: settings?.facebookUrl   || '#' },
+    { icon: 'in', label: 'Instagram', href: settings?.instagramUrl  || '#' },
+    { icon: 'li', label: 'LinkedIn',  href: settings?.linkedinUrl   || '#' },
+    { icon: '▶',  label: 'YouTube',   href: settings?.youtubeUrl    || '#' },
+  ]
+
   return (
     <footer>
       <div className="foot-grid" style={{
@@ -42,21 +62,15 @@ export default function Footer() {
               width={46} height={46}
               style={{ objectFit: 'contain', filter: 'drop-shadow(0 0 14px rgba(140,198,63,.28))' }}
             />
-            <span className="foot-brand">SAPRES SARL</span>
+            <span className="foot-brand">{settings?.companyName || 'SAPRES SARL'}</span>
           </div>
           <p className="foot-p">
-            Leader de l'énergie solaire au Cameroun. Partenaire officiel Blue Carbon.
-            Installations résidentielles, industrielles et solutions d'éclairage public.
+            {settings?.companyDescription || 'Leader de l\'énergie solaire au Cameroun. Partenaire officiel Blue Carbon. Installations résidentielles, industrielles et solutions d\'éclairage public.'}
           </p>
 
           {/* Réseaux sociaux */}
           <div className="soc-links">
-            {[
-              { icon: 'f', label: 'Facebook',  href: '#' },
-              { icon: 'in', label: 'Instagram', href: '#' },
-              { icon: 'li', label: 'LinkedIn',  href: '#' },
-              { icon: '▶',  label: 'YouTube',   href: '#' },
-            ].map((s) => (
+            {socials.map((s) => (
               <a
                 key={s.label}
                 href={s.href}
@@ -70,6 +84,22 @@ export default function Footer() {
               </a>
             ))}
           </div>
+
+          {/* Infos contact depuis settings */}
+          {settings && (
+            <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {settings.companyPhone && (
+                <a href={`tel:${settings.companyPhone}`} style={{ fontSize: '.72rem', color: 'rgba(255,255,255,.35)', textDecoration: 'none' }}>
+                  📞 {settings.companyPhone}
+                </a>
+              )}
+              {settings.companyEmail && (
+                <a href={`mailto:${settings.companyEmail}`} style={{ fontSize: '.72rem', color: 'rgba(255,255,255,.35)', textDecoration: 'none' }}>
+                  ✉️ {settings.companyEmail}
+                </a>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Liens Entreprise */}
@@ -85,7 +115,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="foot-bottom">
         <p>
-          © {new Date().getFullYear()} <span className="fg-c">SAPRES SARL</span> — Tous droits réservés
+          © {new Date().getFullYear()} <span className="fg-c">{settings?.companyName || 'SAPRES SARL'}</span> — Tous droits réservés
         </p>
         <p>
           Partenaire Officiel{' '}

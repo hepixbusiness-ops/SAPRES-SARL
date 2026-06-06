@@ -1,14 +1,23 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import { contactApi } from '@/lib/api'
+import { contactApi, settingsApi } from '@/lib/api'
+import type { SiteSettings } from '@/types'
 import toast from 'react-hot-toast'
 
 export default function ContactPage() {
-  const [form, setForm]     = useState({ fullName:'', phone:'', email:'', subject:'', message:'' })
-  const [loading, setLoading] = useState(false)
-  const [sent, setSent]       = useState(false)
+  const [form, setForm]         = useState({ fullName:'', phone:'', email:'', subject:'', message:'' })
+  const [loading, setLoading]   = useState(false)
+  const [sent, setSent]         = useState(false)
+  const [settings, setSettings] = useState<SiteSettings | null>(null)
+
+  // Charger coordonnées depuis GET /settings (Module 11)
+  useEffect(() => {
+    settingsApi.get()
+      .then((res) => setSettings(res.data.data))
+      .catch(() => {/* fallback ci-dessous */})
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -22,6 +31,14 @@ export default function ContactPage() {
     } catch { toast.error('Erreur lors de l\'envoi. Contactez-nous via WhatsApp.') }
     finally { setLoading(false) }
   }
+
+  // Infos de contact depuis l'API ou fallback
+  const phone   = settings?.companyPhone   || '+237 677 000 000'
+  const email   = settings?.companyEmail   || 'info@sapres.cm'
+  const address = settings?.companyAddress || 'Yaoundé, Cameroun'
+  const h1      = settings?.workingHours?.mondayToFriday || '08:00 - 17:00'
+  const h2      = settings?.workingHours?.saturday       || '08:00 - 13:00'
+  const wa      = settings?.whatsappNumber || '237677000000'
 
   return (
     <>
@@ -47,11 +64,11 @@ export default function ContactPage() {
               </h2>
               <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
                 {[
-                  { icon:'📍', label:'Adresse',   value:'Yaoundé, Cameroun' },
-                  { icon:'📞', label:'Téléphone', value:'+237 677 000 000' },
-                  { icon:'✉️', label:'Email',     value:'info@sapres.cm' },
-                  { icon:'⏰', label:'Lun-Ven',   value:'08:00 - 17:00' },
-                  { icon:'⏰', label:'Samedi',    value:'08:00 - 13:00' },
+                  { icon:'📍', label:'Adresse',   value: address },
+                  { icon:'📞', label:'Téléphone', value: phone },
+                  { icon:'✉️', label:'Email',     value: email },
+                  { icon:'⏰', label:'Lun-Ven',   value: h1 },
+                  { icon:'⏰', label:'Samedi',    value: h2 },
                 ].map(c => (
                   <div key={c.label} style={{ display:'flex', gap:11, alignItems:'flex-start', padding:11, borderRadius:12, background:'#fff', border:'1px solid rgba(0,0,0,.06)', marginBottom:6 }}>
                     <div style={{ width:38, height:38, background:'#f0f4e8', borderRadius:9, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>{c.icon}</div>
@@ -65,7 +82,7 @@ export default function ContactPage() {
 
               <div style={{ marginTop:20, background:'rgba(37,211,102,.06)', border:'1px solid rgba(37,211,102,.15)', borderRadius:14, padding:'18px 20px' }}>
                 <p style={{ fontSize:'.82rem', color:'#4a5568', marginBottom:12 }}>💬 Réponse instantanée via WhatsApp</p>
-                <button onClick={() => { const num = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER||'237677000000'; window.open(`https://wa.me/${num}?text=${encodeURIComponent('Bonjour SAPRES, j\'ai une question !')}`, '_blank') }}
+                <button onClick={() => window.open(`https://wa.me/${wa}?text=${encodeURIComponent('Bonjour SAPRES, j\'ai une question !')}`, '_blank')}
                   style={{ background:'linear-gradient(135deg,#25D366,#128C7E)', color:'#fff', border:'none', padding:'10px 20px', borderRadius:50, fontSize:'.82rem', fontWeight:700, cursor:'pointer', fontFamily:'Lato,sans-serif' }}>
                   💬 Ouvrir WhatsApp
                 </button>
