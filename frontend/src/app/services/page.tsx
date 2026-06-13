@@ -37,7 +37,7 @@ export default function ServicesPage() {
     <>
       <Navbar />
       <main>
-        <section style={{ paddingTop: 90, background: '#fff' }}>
+        <section style={{ paddingTop: 74, background: '#fff' }}>
           {/* Onglets */}
           <div style={{ borderBottom: '1px solid rgba(0,0,0,.07)', padding: '0 48px', display: 'flex', gap: 4, overflowX: 'auto', scrollbarWidth: 'none', background: '#fff', position: 'sticky', top: 74, zIndex: 50 }}>
             {SERVICE_TABS.map((t, i) => (
